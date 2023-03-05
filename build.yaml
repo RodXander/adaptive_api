@@ -1,0 +1,14 @@
+targets:
+  adaptive_api:
+    builders:
+      adaptive_api|adaptiveBuilder:
+        options:
+          adaptive_variants: mobileApp, mobileWeb,deskto pApp ,desktopWeb
+
+builders:
+  adaptiveBuilder:
+    import: 'package:adaptive_api/adaptive_api.dart'
+    builder_factories: ['adaptiveBuilder']
+    build_extensions: { r'$lib$' : [ 'adaptive_api.g.dart' ] }
+    build_to: source
+    auto_apply: root_package
