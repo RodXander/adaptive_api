@@ -7,7 +7,12 @@ import 'package:dart_style/dart_style.dart';
 import 'package:path/path.dart';
 
 class AdaptiveBuilder extends Builder {
-  static const adaptiveApiName = 'adaptive_api.g.dart';
+  static const _adaptiveApiName = 'adaptive_api.g.dart';
+  static const _adaptiveVariant = 'AdaptiveVariant';
+  static const _adaptiveBuilds = 'AdaptiveBuilds';
+  static const _adaptiveStatelessWidget = 'AdaptiveStatelessWidget';
+  static const _adaptiveStatefulWidget = 'AdaptiveStatefulWidget';
+  static const _adaptiveState = 'AdaptiveState';
 
   AdaptiveBuilder(this.options) {
     // Sanitizing the input on the different variants
@@ -32,7 +37,7 @@ class AdaptiveBuilder extends Builder {
   FutureOr<void> build(BuildStep buildStep) async {
     // Getting the asset id for the adaptive api file and its buffer
     var adaptiveAssetId =
-        AssetId(buildStep.inputId.package, join('lib', adaptiveApiName));
+        AssetId(buildStep.inputId.package, join('lib', _adaptiveApiName));
     var stringBuffer = StringBuffer();
 
     // Writing the preamble for generated content
@@ -48,7 +53,7 @@ class AdaptiveBuilder extends Builder {
 
     // Creating and writing the AdaptiveVariants enum
     final adaptiveVariants = Enum((e) => e
-      ..name = 'AdaptiveVariant'
+      ..name = _adaptiveVariant
       ..values = ListBuilder([
         for (var variant in _sanitizedVariants)
           EnumValue((ev) => ev..name = variant)
@@ -58,7 +63,7 @@ class AdaptiveBuilder extends Builder {
 
     // Creating and writing the AdaptiveBuilds class
     final adaptiveBuilds = Class((c) => c
-      ..name = 'AdaptiveBuilds'
+      ..name = _adaptiveBuilds
       ..abstract = true
       ..methods = ListBuilder([
         for (var variant in _sanitizedVariantsCap)
@@ -76,10 +81,10 @@ class AdaptiveBuilder extends Builder {
 
     // Creating the AdaptiveStatelessWidget class
     final adaptiveStateless = Class((c) => c
-      ..name = 'AdaptiveStatelessWidget'
+      ..name = _adaptiveStatelessWidget
       ..abstract = true
       ..extend = const Reference('StatelessWidget')
-      ..implements = ListBuilder([const Reference('AdaptiveBuilds')])
+      ..implements = ListBuilder([const Reference(_adaptiveBuilds)])
       ..fields = ListBuilder([_fieldVariant])
       ..constructors = _constructors
       ..methods = ListBuilder([_build()]));
@@ -88,20 +93,27 @@ class AdaptiveBuilder extends Builder {
 
     // Creating the AdaptiveStatefulWidget class
     final adaptiveStateful = Class((c) => c
-      ..name = 'AdaptiveStatefulWidget'
+      ..name = _adaptiveStatefulWidget
       ..abstract = true
       ..extend = const Reference('StatefulWidget')
       ..fields = ListBuilder([_fieldVariant])
-      ..constructors = _constructors);
+      ..constructors = _constructors
+      ..methods = ListBuilder([
+        Method((m) => m
+          ..annotations = ListBuilder([_overrideAnnotation])
+          ..returns =
+              const Reference('$_adaptiveState<$_adaptiveStatefulWidget>')
+          ..name = 'createState')
+      ]));
     stringBuffer.writeln(
         _dartFormatter.format('${adaptiveStateful.accept(DartEmitter())}'));
 
     // Creating the AdaptiveState class
     final adaptiveState = Class((c) => c
-      ..name = 'AdaptiveState<T extends AdaptiveStatefulWidget>'
+      ..name = '$_adaptiveState<T extends $_adaptiveStatefulWidget>'
       ..abstract = true
       ..extend = const Reference('State<T>')
-      ..mixins = ListBuilder([const Reference('AdaptiveBuilds')])
+      ..mixins = ListBuilder([const Reference(_adaptiveBuilds)])
       ..methods = ListBuilder([_build(onState: true)]));
     stringBuffer.writeln(
         _dartFormatter.format('${adaptiveState.accept(DartEmitter())}'));
@@ -112,13 +124,13 @@ class AdaptiveBuilder extends Builder {
 
   @override
   Map<String, List<String>> get buildExtensions => {
-        r'$lib$': [adaptiveApiName]
+        r'$lib$': [_adaptiveApiName]
       };
 
   Field get _fieldVariant => Field((f) => f
     ..name = 'variant'
     ..modifier = FieldModifier.final$
-    ..type = const Reference('AdaptiveVariant'));
+    ..type = const Reference(_adaptiveVariant));
 
   ListBuilder<Constructor> get _constructors => ListBuilder([
         for (var variant in _sanitizedVariants)
@@ -132,8 +144,10 @@ class AdaptiveBuilder extends Builder {
                 ..name = 'key')
             ])
             ..initializers =
-                ListBuilder([Code('variant = AdaptiveVariant.$variant')]))
+                ListBuilder([Code('variant = $_adaptiveVariant.$variant')]))
       ]);
+
+  Expression get _overrideAnnotation => const CodeExpression(Code('override'));
 
   Method _build({
     bool onState = false,
@@ -142,14 +156,14 @@ class AdaptiveBuilder extends Builder {
     var buildBody = StringBuffer();
     buildBody.writeln('switch (${onState ? 'widget.' : ''}variant) {');
     for (int i = 0; i < _sanitizedVariants.length; i++) {
-      buildBody.writeln('case AdaptiveVariant.${_sanitizedVariants[i]}:');
+      buildBody.writeln('case $_adaptiveVariant.${_sanitizedVariants[i]}:');
       buildBody.writeln('return _build${_sanitizedVariantsCap[i]}(context);');
     }
     buildBody.writeln('}');
 
     // Creating the actual method
     return Method((m) => m
-      ..annotations = ListBuilder([const CodeExpression(Code('override'))])
+      ..annotations = ListBuilder([_overrideAnnotation])
       ..returns = const Reference('Widget')
       ..name = 'build'
       ..requiredParameters = ListBuilder([
