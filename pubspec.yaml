@@ -13,6 +13,9 @@ dependencies:
   build: ^2.3.1
   path: ^1.8.2
   build_config: ^1.1.1
+  code_builder: ^4.4.0
+  built_collection: ^5.1.1
+  dart_style: ^2.2.5
 
 dev_dependencies:
   flutter_test:

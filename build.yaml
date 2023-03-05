@@ -3,7 +3,7 @@ targets:
     builders:
       adaptive_api|adaptiveBuilder:
         options:
-          adaptive_variants: mobileApp, mobileWeb,deskto pApp ,desktopWeb
+          adaptive_variants: mobileApp, mobileWeb,desktopApp ,desktopWeb
 
 builders:
   adaptiveBuilder:
