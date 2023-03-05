@@ -4,3 +4,4 @@ targets:
       adaptive_api|adaptiveBuilder:
         options:
           adaptive_variants: mobileApp, mobileWeb, desktopApp, desktopWeb
+          adaptive_variants_optional: false

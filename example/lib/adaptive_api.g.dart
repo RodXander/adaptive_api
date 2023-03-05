@@ -13,6 +13,13 @@ abstract class AdaptiveBuilds {
   Widget _buildDesktopWeb(BuildContext context);
 }
 
+mixin AdaptiveBuildsDefault {
+  Widget _buildMobileApp(BuildContext context) => SizedBox.shrink();
+  Widget _buildMobileWeb(BuildContext context) => SizedBox.shrink();
+  Widget _buildDesktopApp(BuildContext context) => SizedBox.shrink();
+  Widget _buildDesktopWeb(BuildContext context) => SizedBox.shrink();
+}
+
 abstract class AdaptiveStatelessWidget extends StatelessWidget
     implements AdaptiveBuilds {
   const AdaptiveStatelessWidget.mobileApp({super.key})

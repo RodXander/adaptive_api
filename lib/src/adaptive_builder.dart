@@ -10,11 +10,15 @@ class AdaptiveBuilder extends Builder {
   static const _adaptiveApiName = 'adaptive_api.g.dart';
   static const _adaptiveVariant = 'AdaptiveVariant';
   static const _adaptiveBuilds = 'AdaptiveBuilds';
+  static const _adaptiveBuildsDefault = 'AdaptiveBuildsDefault';
   static const _adaptiveStatelessWidget = 'AdaptiveStatelessWidget';
   static const _adaptiveStatefulWidget = 'AdaptiveStatefulWidget';
   static const _adaptiveState = 'AdaptiveState';
 
   AdaptiveBuilder(this.options) {
+    // Whether to force the implementation of the variants build methods on the client
+    _variantsOptional = options.config['adaptive_variants_optional'] ?? false;
+
     // Sanitizing the input on the different variants
     _sanitizedVariants = (options.config['adaptive_variants'] as String)
         .split(',')
@@ -30,6 +34,7 @@ class AdaptiveBuilder extends Builder {
 
   final BuilderOptions options;
   final DartFormatter _dartFormatter = DartFormatter();
+  late final bool _variantsOptional;
   late final List<String> _sanitizedVariants;
   late final List<String> _sanitizedVariantsCap;
 
@@ -79,11 +84,32 @@ class AdaptiveBuilder extends Builder {
     stringBuffer.writeln(
         _dartFormatter.format('${adaptiveBuilds.accept(DartEmitter())}'));
 
+    // Creating and writing the AdaptiveVariantsDefault
+    final adaptiveVariantsDefault = Mixin((m) => m
+      ..name = _adaptiveBuildsDefault
+      ..methods = ListBuilder([
+        for (var variant in _sanitizedVariantsCap)
+          Method((m) => m
+            ..name = '_build$variant'
+            ..returns = const Reference('Widget')
+            ..requiredParameters = ListBuilder([
+              Parameter((p) => p
+                ..name = 'context'
+                ..type = const Reference('BuildContext'))
+            ])
+            ..body = const Code('SizedBox.shrink()')
+            ..lambda = true)
+      ]));
+    stringBuffer.writeln(_dartFormatter
+        .format('${adaptiveVariantsDefault.accept(DartEmitter())}'));
+
     // Creating the AdaptiveStatelessWidget class
     final adaptiveStateless = Class((c) => c
       ..name = _adaptiveStatelessWidget
       ..abstract = true
       ..extend = const Reference('StatelessWidget')
+      ..mixins = ListBuilder(
+          [if (_variantsOptional) const Reference(_adaptiveBuildsDefault)])
       ..implements = ListBuilder([const Reference(_adaptiveBuilds)])
       ..fields = ListBuilder([_fieldVariant])
       ..constructors = _constructors
@@ -113,7 +139,10 @@ class AdaptiveBuilder extends Builder {
       ..name = '$_adaptiveState<T extends $_adaptiveStatefulWidget>'
       ..abstract = true
       ..extend = const Reference('State<T>')
-      ..mixins = ListBuilder([const Reference(_adaptiveBuilds)])
+      ..mixins = ListBuilder([
+        const Reference(_adaptiveBuilds),
+        if (_variantsOptional) const Reference(_adaptiveBuildsDefault)
+      ])
       ..methods = ListBuilder([_build(onState: true)]));
     stringBuffer.writeln(
         _dartFormatter.format('${adaptiveState.accept(DartEmitter())}'));
