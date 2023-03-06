@@ -73,7 +73,7 @@ class AdaptiveBuilder extends Builder {
       ..methods = ListBuilder([
         for (var variant in _sanitizedVariantsCap)
           Method((m) => m
-            ..name = '_build$variant'
+            ..name = 'build$variant'
             ..returns = const Reference('Widget')
             ..requiredParameters = ListBuilder([
               Parameter((p) => p
@@ -90,7 +90,7 @@ class AdaptiveBuilder extends Builder {
       ..methods = ListBuilder([
         for (var variant in _sanitizedVariantsCap)
           Method((m) => m
-            ..name = '_build$variant'
+            ..name = 'build$variant'
             ..returns = const Reference('Widget')
             ..requiredParameters = ListBuilder([
               Parameter((p) => p
