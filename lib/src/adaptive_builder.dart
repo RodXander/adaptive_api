@@ -186,7 +186,7 @@ class AdaptiveBuilder extends Builder {
     buildBody.writeln('switch (${onState ? 'widget.' : ''}variant) {');
     for (int i = 0; i < _sanitizedVariants.length; i++) {
       buildBody.writeln('case $_adaptiveVariant.${_sanitizedVariants[i]}:');
-      buildBody.writeln('return _build${_sanitizedVariantsCap[i]}(context);');
+      buildBody.writeln('return build${_sanitizedVariantsCap[i]}(context);');
     }
     buildBody.writeln('}');
 
