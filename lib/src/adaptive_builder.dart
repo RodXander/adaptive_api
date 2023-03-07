@@ -97,7 +97,7 @@ class AdaptiveBuilder extends Builder {
                 ..name = 'context'
                 ..type = const Reference('BuildContext'))
             ])
-            ..body = const Code('SizedBox.shrink()')
+            ..body = const Code('const SizedBox.shrink()')
             ..lambda = true)
       ]));
     stringBuffer.writeln(_dartFormatter
