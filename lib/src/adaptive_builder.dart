@@ -53,9 +53,6 @@ class AdaptiveBuilder extends Builder {
     stringBuffer
         .writeln(_dartFormatter.format('${directives.accept(DartEmitter())}'));
 
-    // Writing some linter ignore clauses
-    stringBuffer.writeln('// ignore_for_file: unused_element\n');
-
     // Creating and writing the AdaptiveVariants enum
     final adaptiveVariants = Enum((e) => e
       ..name = _adaptiveVariant
