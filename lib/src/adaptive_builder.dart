@@ -158,17 +158,27 @@ class AdaptiveBuilder extends Builder {
     ..modifier = FieldModifier.final$
     ..type = const Reference(_adaptiveVariant));
 
+  Parameter get _keyParameter => Parameter((p) => p
+    ..toSuper = true
+    ..named = true
+    ..name = 'key');
+
   ListBuilder<Constructor> get _constructors => ListBuilder([
+        Constructor((c) => c
+          ..constant = true
+          ..optionalParameters = ListBuilder([
+            _keyParameter,
+            Parameter((p) => p
+              ..named = true
+              ..required = true
+              ..toThis = true
+              ..name = 'variant'),
+          ])),
         for (var variant in _sanitizedVariants)
           Constructor((c) => c
             ..constant = true
             ..name = variant
-            ..optionalParameters = ListBuilder([
-              Parameter((p) => p
-                ..toSuper = true
-                ..named = true
-                ..name = 'key')
-            ])
+            ..optionalParameters = ListBuilder([_keyParameter])
             ..initializers =
                 ListBuilder([Code('variant = $_adaptiveVariant.$variant')]))
       ]);
