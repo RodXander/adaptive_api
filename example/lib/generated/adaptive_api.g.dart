@@ -2,26 +2,29 @@
 
 import 'package:flutter/widgets.dart';
 
-// ignore_for_file: unused_element
-
 enum AdaptiveVariant { mobileApp, mobileWeb, desktopApp, desktopWeb }
 
 abstract class AdaptiveBuilds {
-  Widget _buildMobileApp(BuildContext context);
-  Widget _buildMobileWeb(BuildContext context);
-  Widget _buildDesktopApp(BuildContext context);
-  Widget _buildDesktopWeb(BuildContext context);
+  Widget buildMobileApp(BuildContext context);
+  Widget buildMobileWeb(BuildContext context);
+  Widget buildDesktopApp(BuildContext context);
+  Widget buildDesktopWeb(BuildContext context);
 }
 
 mixin AdaptiveBuildsDefault {
-  Widget _buildMobileApp(BuildContext context) => SizedBox.shrink();
-  Widget _buildMobileWeb(BuildContext context) => SizedBox.shrink();
-  Widget _buildDesktopApp(BuildContext context) => SizedBox.shrink();
-  Widget _buildDesktopWeb(BuildContext context) => SizedBox.shrink();
+  Widget buildMobileApp(BuildContext context) => const SizedBox.shrink();
+  Widget buildMobileWeb(BuildContext context) => const SizedBox.shrink();
+  Widget buildDesktopApp(BuildContext context) => const SizedBox.shrink();
+  Widget buildDesktopWeb(BuildContext context) => const SizedBox.shrink();
 }
 
 abstract class AdaptiveStatelessWidget extends StatelessWidget
     implements AdaptiveBuilds {
+  const AdaptiveStatelessWidget({
+    super.key,
+    required this.variant,
+  });
+
   const AdaptiveStatelessWidget.mobileApp({super.key})
       : variant = AdaptiveVariant.mobileApp;
 
@@ -40,18 +43,23 @@ abstract class AdaptiveStatelessWidget extends StatelessWidget
   Widget build(BuildContext context) {
     switch (variant) {
       case AdaptiveVariant.mobileApp:
-        return _buildMobileApp(context);
+        return buildMobileApp(context);
       case AdaptiveVariant.mobileWeb:
-        return _buildMobileWeb(context);
+        return buildMobileWeb(context);
       case AdaptiveVariant.desktopApp:
-        return _buildDesktopApp(context);
+        return buildDesktopApp(context);
       case AdaptiveVariant.desktopWeb:
-        return _buildDesktopWeb(context);
+        return buildDesktopWeb(context);
     }
   }
 }
 
 abstract class AdaptiveStatefulWidget extends StatefulWidget {
+  const AdaptiveStatefulWidget({
+    super.key,
+    required this.variant,
+  });
+
   const AdaptiveStatefulWidget.mobileApp({super.key})
       : variant = AdaptiveVariant.mobileApp;
 
@@ -71,18 +79,18 @@ abstract class AdaptiveStatefulWidget extends StatefulWidget {
 }
 
 abstract class AdaptiveState<T extends AdaptiveStatefulWidget> extends State<T>
-    with AdaptiveBuilds {
+    implements AdaptiveBuilds {
   @override
   Widget build(BuildContext context) {
     switch (widget.variant) {
       case AdaptiveVariant.mobileApp:
-        return _buildMobileApp(context);
+        return buildMobileApp(context);
       case AdaptiveVariant.mobileWeb:
-        return _buildMobileWeb(context);
+        return buildMobileWeb(context);
       case AdaptiveVariant.desktopApp:
-        return _buildDesktopApp(context);
+        return buildDesktopApp(context);
       case AdaptiveVariant.desktopWeb:
-        return _buildDesktopWeb(context);
+        return buildDesktopWeb(context);
     }
   }
 }

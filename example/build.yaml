@@ -5,3 +5,4 @@ targets:
         options:
           adaptive_variants: mobileApp, mobileWeb, desktopApp, desktopWeb
           adaptive_variants_optional: false
+          output_location: lib/generated/

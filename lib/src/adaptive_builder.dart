@@ -19,6 +19,9 @@ class AdaptiveBuilder extends Builder {
     // Whether to force the implementation of the variants build methods on the client
     _variantsOptional = options.config['adaptive_variants_optional'] ?? false;
 
+    // Location where to store the generated file.
+    _outputLocation = join(options.config['output_location'] ?? 'lib', _adaptiveApiName);
+
     // Sanitizing the input on the different variants
     _sanitizedVariants = (options.config['adaptive_variants'] as String)
         .split(',')
@@ -35,6 +38,7 @@ class AdaptiveBuilder extends Builder {
   final BuilderOptions options;
   final DartFormatter _dartFormatter = DartFormatter();
   late final bool _variantsOptional;
+  late final String _outputLocation;
   late final List<String> _sanitizedVariants;
   late final List<String> _sanitizedVariantsCap;
 
@@ -42,7 +46,7 @@ class AdaptiveBuilder extends Builder {
   FutureOr<void> build(BuildStep buildStep) async {
     // Getting the asset id for the adaptive api file and its buffer
     var adaptiveAssetId =
-        AssetId(buildStep.inputId.package, join('lib', _adaptiveApiName));
+        AssetId(buildStep.inputId.package, _outputLocation);
     var stringBuffer = StringBuffer();
 
     // Writing the preamble for generated content
@@ -136,7 +140,7 @@ class AdaptiveBuilder extends Builder {
       ..name = '$_adaptiveState<T extends $_adaptiveStatefulWidget>'
       ..abstract = true
       ..extend = const Reference('State<T>')
-      ..mixins = ListBuilder([
+      ..implements = ListBuilder([
         const Reference(_adaptiveBuilds),
         if (_variantsOptional) const Reference(_adaptiveBuildsDefault)
       ])
@@ -150,7 +154,7 @@ class AdaptiveBuilder extends Builder {
 
   @override
   Map<String, List<String>> get buildExtensions => {
-        r'$lib$': [_adaptiveApiName]
+        r'$package$': [_outputLocation]
       };
 
   Field get _fieldVariant => Field((f) => f
