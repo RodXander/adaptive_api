@@ -20,7 +20,8 @@ class AdaptiveBuilder extends Builder {
     _variantsOptional = options.config['adaptive_variants_optional'] ?? false;
 
     // Location where to store the generated file.
-    _outputLocation = join(options.config['output_location'] ?? 'lib', _adaptiveApiName);
+    _outputLocation =
+        join(options.config['output_location'] ?? 'lib', _adaptiveApiName);
 
     // Sanitizing the input on the different variants
     _sanitizedVariants = (options.config['adaptive_variants'] as String)
@@ -36,7 +37,8 @@ class AdaptiveBuilder extends Builder {
   }
 
   final BuilderOptions options;
-  final DartFormatter _dartFormatter = DartFormatter();
+  final DartFormatter _dartFormatter = DartFormatter(
+      languageVersion: DartFormatter.latestLanguageVersion);
   late final bool _variantsOptional;
   late final String _outputLocation;
   late final List<String> _sanitizedVariants;
@@ -45,8 +47,7 @@ class AdaptiveBuilder extends Builder {
   @override
   FutureOr<void> build(BuildStep buildStep) async {
     // Getting the asset id for the adaptive api file and its buffer
-    var adaptiveAssetId =
-        AssetId(buildStep.inputId.package, _outputLocation);
+    var adaptiveAssetId = AssetId(buildStep.inputId.package, _outputLocation);
     var stringBuffer = StringBuffer();
 
     // Writing the preamble for generated content

@@ -20,22 +20,19 @@ mixin AdaptiveBuildsDefault {
 
 abstract class AdaptiveStatelessWidget extends StatelessWidget
     implements AdaptiveBuilds {
-  const AdaptiveStatelessWidget({
-    super.key,
-    required this.variant,
-  });
+  const AdaptiveStatelessWidget({super.key, required this.variant});
 
   const AdaptiveStatelessWidget.mobileApp({super.key})
-      : variant = AdaptiveVariant.mobileApp;
+    : variant = AdaptiveVariant.mobileApp;
 
   const AdaptiveStatelessWidget.mobileWeb({super.key})
-      : variant = AdaptiveVariant.mobileWeb;
+    : variant = AdaptiveVariant.mobileWeb;
 
   const AdaptiveStatelessWidget.desktopApp({super.key})
-      : variant = AdaptiveVariant.desktopApp;
+    : variant = AdaptiveVariant.desktopApp;
 
   const AdaptiveStatelessWidget.desktopWeb({super.key})
-      : variant = AdaptiveVariant.desktopWeb;
+    : variant = AdaptiveVariant.desktopWeb;
 
   final AdaptiveVariant variant;
 
@@ -55,22 +52,19 @@ abstract class AdaptiveStatelessWidget extends StatelessWidget
 }
 
 abstract class AdaptiveStatefulWidget extends StatefulWidget {
-  const AdaptiveStatefulWidget({
-    super.key,
-    required this.variant,
-  });
+  const AdaptiveStatefulWidget({super.key, required this.variant});
 
   const AdaptiveStatefulWidget.mobileApp({super.key})
-      : variant = AdaptiveVariant.mobileApp;
+    : variant = AdaptiveVariant.mobileApp;
 
   const AdaptiveStatefulWidget.mobileWeb({super.key})
-      : variant = AdaptiveVariant.mobileWeb;
+    : variant = AdaptiveVariant.mobileWeb;
 
   const AdaptiveStatefulWidget.desktopApp({super.key})
-      : variant = AdaptiveVariant.desktopApp;
+    : variant = AdaptiveVariant.desktopApp;
 
   const AdaptiveStatefulWidget.desktopWeb({super.key})
-      : variant = AdaptiveVariant.desktopWeb;
+    : variant = AdaptiveVariant.desktopWeb;
 
   final AdaptiveVariant variant;
 
